@@ -61,8 +61,9 @@ def index():
     now = datetime.now()
     six_months_ago = now - timedelta(days=180)
     
+    # Use PostgreSQL compatible date formatting
     monthly_issues = db.session.query(
-        func.strftime('%Y-%m', IssuedBook.issue_date).label('month'),
+        func.to_char(IssuedBook.issue_date, 'YYYY-MM').label('month'),
         func.count(IssuedBook.id)
     ).filter(IssuedBook.issue_date >= six_months_ago).group_by('month').all()
     
