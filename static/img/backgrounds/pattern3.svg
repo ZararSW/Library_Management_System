@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <defs>
+    <pattern id="libraryPattern" patternUnits="userSpaceOnUse" width="200" height="200">
+      <!-- Library-inspired elegant pattern -->
+      <rect width="200" height="200" fill="#181e26"/>
+      
+      <!-- Bookshelf outlines -->
+      <line x1="0" y1="50" x2="200" y2="50" stroke="#6a5c85" stroke-width="1" opacity="0.15"/>
+      <line x1="0" y1="100" x2="200" y2="100" stroke="#6a5c85" stroke-width="1" opacity="0.15"/>
+      <line x1="0" y1="150" x2="200" y2="150" stroke="#6a5c85" stroke-width="1" opacity="0.15"/>
+      
+      <!-- Vertical dividers -->
+      <line x1="50" y1="0" x2="50" y2="200" stroke="#6a5c85" stroke-width="1" opacity="0.15"/>
+      <line x1="100" y1="0" x2="100" y2="200" stroke="#6a5c85" stroke-width="1" opacity="0.15"/>
+      <line x1="150" y1="0" x2="150" y2="200" stroke="#6a5c85" stroke-width="1" opacity="0.15"/>
+      
+      <!-- Book shapes -->
+      <rect x="10" y="10" width="30" height="35" rx="1" fill="#4e67a1" opacity="0.1"/>
+      <rect x="110" y="10" width="30" height="35" rx="1" fill="#7a77ab" opacity="0.1"/>
+      <rect x="60" y="60" width="30" height="35" rx="1" fill="#9c68a9" opacity="0.1"/>
+      <rect x="160" y="60" width="30" height="35" rx="1" fill="#3c91e6" opacity="0.1"/>
+      <rect x="10" y="110" width="30" height="35" rx="1" fill="#3c91e6" opacity="0.1"/>
+      <rect x="110" y="110" width="30" height="35" rx="1" fill="#4e67a1" opacity="0.1"/>
+      <rect x="60" y="160" width="30" height="35" rx="1" fill="#7a77ab" opacity="0.1"/>
+      <rect x="160" y="160" width="30" height="35" rx="1" fill="#9c68a9" opacity="0.1"/>
+      
+      <!-- Decorative elements -->
+      <circle cx="25" cy="175" r="10" fill="#4c87b9" opacity="0.1"/>
+      <circle cx="125" cy="75" r="10" fill="#4c87b9" opacity="0.1"/>
+      <circle cx="175" cy="125" r="10" fill="#4c87b9" opacity="0.1"/>
+      <circle cx="75" cy="25" r="10" fill="#4c87b9" opacity="0.1"/>
+    </pattern>
+  </defs>
+  <rect width="200" height="200" fill="url(#libraryPattern)"/>
+</svg>

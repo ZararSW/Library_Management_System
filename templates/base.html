@@ -15,7 +15,7 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100 {% if request.endpoint == 'index' %}home-page{% elif request.endpoint.startswith('books.') %}books-page{% elif request.endpoint.startswith('members.') %}members-page{% endif %}">
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">

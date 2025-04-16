@@ -207,23 +207,17 @@ def generate_qr_code(data, size=200, file_path=None):
         import qrcode
         from io import BytesIO
         
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
-        )
-        qr.add_data(data)
-        qr.make(fit=True)
-
-        img = qr.make_image(fill_color="black", back_color="white")
+        # Simple approach using make function directly
+        qr_img = qrcode.make(data)
         
         if file_path:
-            img.save(file_path)
+            qr_img.save(file_path)
             return True
         else:
+            # Return as BytesIO object
             bio = BytesIO()
-            img.save(bio)
+            qr_img.save(bio)
+            # Reset cursor position to beginning so it can be read
             bio.seek(0)
             return bio
     except ImportError:

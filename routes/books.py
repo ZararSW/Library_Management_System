@@ -230,15 +230,14 @@ def get_qr_code(book_id):
     }
     
     # Generate QR code
-    qr_img = generate_qr_code(str(qr_data))
+    qr_img_io = generate_qr_code(str(qr_data))
     
-    if not qr_img:
+    if not qr_img_io:
         return jsonify({'success': False, 'error': 'Failed to generate QR code'}), 500
     
     # Convert to base64 string
-    buffered = BytesIO()
-    qr_img.save(buffered)
-    img_str = base64.b64encode(buffered.getvalue()).decode('utf-8')
+    qr_img_io.seek(0)
+    img_str = base64.b64encode(qr_img_io.getvalue()).decode('utf-8')
     
     return jsonify({
         'success': True,
