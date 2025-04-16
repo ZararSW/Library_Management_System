@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="200" height="300" viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="300" fill="#f8f9fa" stroke="#dee2e6" stroke-width="2"/>
+  <rect x="20" y="20" width="160" height="210" fill="#e9ecef" rx="2" ry="2"/>
+  <rect x="20" y="240" width="160" height="15" fill="#dee2e6" rx="2" ry="2"/>
+  <rect x="20" y="265" width="120" height="15" fill="#dee2e6" rx="2" ry="2"/>
+  <path d="M100 100 L130 130 L100 160 L70 130 Z" fill="#adb5bd"/>
+  <circle cx="100" cy="100" r="30" fill="#adb5bd"/>
+  <text x="100" y="105" font-family="Arial" font-size="12" text-anchor="middle" fill="#495057">BOOK</text>
+</svg>

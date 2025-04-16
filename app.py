@@ -8,6 +8,8 @@ from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
+import jinja2
+from markupsafe import Markup
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -72,6 +74,14 @@ app.register_blueprint(members_bp)
 app.register_blueprint(circulation_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(reviews_bp)
+
+# Custom template filters
+@app.template_filter('nl2br')
+def nl2br_filter(s):
+    """Convert newlines to HTML line breaks."""
+    if not s:
+        return s
+    return Markup(s.replace('\n', '<br>'))
 
 # Setup login manager
 @login_manager.user_loader

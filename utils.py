@@ -8,32 +8,101 @@ from werkzeug.utils import secure_filename
 import uuid
 from models import Book, Member, IssuedBook, BookReview
 
-def save_image(file, folder):
-    """Save an image to the specified folder and return the filename"""
+def save_image(file, folder, allowed_extensions=None):
+    """
+    Save an image to the specified folder and return the filename
+    
+    Args:
+        file: The uploaded file object
+        folder: The folder configuration key (e.g., 'ORIGINALS_FOLDER')
+        allowed_extensions: List of allowed file extensions
+        
+    Returns:
+        str: The unique filename of the saved image or None if failed
+    """
     if not file:
         return None
+    
+    if not allowed_extensions:
+        allowed_extensions = {'jpg', 'jpeg', 'png', 'gif'}
+    
+    # Check file extension
+    file_ext = os.path.splitext(file.filename)[1].lower().replace('.', '')
+    if file_ext not in allowed_extensions:
+        current_app.logger.warning(f"Invalid file extension: {file_ext}")
+        return None
+    
+    try:
+        filename = secure_filename(file.filename)
+        unique_filename = f"{uuid.uuid4()}_{filename}"
+        file_path = os.path.join(current_app.config[folder], unique_filename)
         
-    filename = secure_filename(file.filename)
-    unique_filename = f"{uuid.uuid4()}_{filename}"
-    file_path = os.path.join(current_app.config[folder], unique_filename)
-    file.save(file_path)
-    return unique_filename
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        
+        # Save the file
+        file.save(file_path)
+        
+        # Validate that it's a real image
+        with Image.open(file_path) as img:
+            img.verify()  # Verify it's a valid image
+            
+        return unique_filename
+    except Exception as e:
+        current_app.logger.error(f"Error saving image: {str(e)}")
+        # If anything goes wrong, clean up any partial file
+        if 'file_path' in locals() and os.path.exists(file_path):
+            os.remove(file_path)
+        return None
 
 def create_thumbnail(original_filename, size=(200, 300)):
-    """Create a thumbnail for the given image file"""
+    """
+    Create a thumbnail for the given image file
+    
+    Args:
+        original_filename: The filename of the original image
+        size: Thumbnail dimensions as (width, height) tuple
+        
+    Returns:
+        str: The filename of the thumbnail or None if failed
+    """
     if not original_filename:
         return None
+    
+    try:
+        original_path = os.path.join(current_app.config['ORIGINALS_FOLDER'], original_filename)
+        thumbnail_filename = f"thumb_{original_filename}"
+        thumbnail_path = os.path.join(current_app.config['THUMBNAILS_FOLDER'], thumbnail_filename)
         
-    original_path = os.path.join(current_app.config['ORIGINALS_FOLDER'], original_filename)
-    thumbnail_filename = f"thumb_{original_filename}"
-    thumbnail_path = os.path.join(current_app.config['THUMBNAILS_FOLDER'], thumbnail_filename)
-    
-    with Image.open(original_path) as img:
-        img = img.convert('RGB')
-        img.thumbnail(size)
-        img.save(thumbnail_path)
-    
-    return thumbnail_filename
+        # Ensure the thumbnail directory exists
+        os.makedirs(os.path.dirname(thumbnail_path), exist_ok=True)
+        
+        with Image.open(original_path) as img:
+            img = img.convert('RGB')
+            
+            # Calculate dimensions preserving aspect ratio
+            img_width, img_height = img.size
+            ratio = min(size[0] / img_width, size[1] / img_height)
+            new_size = (int(img_width * ratio), int(img_height * ratio))
+            
+            # Resize and crop to fit exactly
+            img = img.resize(new_size, Image.LANCZOS)
+            
+            # Create new image with exact dimensions
+            new_img = Image.new("RGB", size, color="white")
+            
+            # Paste resized image centered on white background
+            paste_x = (size[0] - new_size[0]) // 2
+            paste_y = (size[1] - new_size[1]) // 2
+            new_img.paste(img, (paste_x, paste_y))
+            
+            # Save the thumbnail
+            new_img.save(thumbnail_path, quality=90)
+        
+        return thumbnail_filename
+    except Exception as e:
+        current_app.logger.error(f"Error creating thumbnail: {str(e)}")
+        return None
 
 def calculate_fine(due_date, return_date=None, rate_per_day=1.0):
     """Calculate fine for overdue books"""
@@ -121,3 +190,123 @@ def update_book_rating(book_id):
         book.average_rating = float(avg_rating)
         book.total_ratings = total_ratings
         db.session.commit()
+        
+def generate_qr_code(data, size=200, file_path=None):
+    """
+    Generate a QR code for the given data
+    
+    Args:
+        data: The data to encode in the QR code
+        size: The size of the QR code in pixels
+        file_path: Optional path to save the QR code
+        
+    Returns:
+        BytesIO object containing the QR code image, or True if saved to file_path
+    """
+    try:
+        import qrcode
+        from io import BytesIO
+        
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(data)
+        qr.make(fit=True)
+
+        img = qr.make_image(fill_color="black", back_color="white")
+        
+        if file_path:
+            img.save(file_path)
+            return True
+        else:
+            bio = BytesIO()
+            img.save(bio)
+            bio.seek(0)
+            return bio
+    except ImportError:
+        current_app.logger.error("qrcode library not installed")
+        return None
+    except Exception as e:
+        current_app.logger.error(f"Error generating QR code: {str(e)}")
+        return None
+        
+def get_member_stats(member_id):
+    """
+    Get comprehensive statistics for a member
+    
+    Args:
+        member_id: The ID of the member
+        
+    Returns:
+        dict: A dictionary of member statistics
+    """
+    from app import db
+    from sqlalchemy import func
+    from datetime import datetime
+    
+    try:
+        # Current date for calculations
+        today = datetime.now().date()
+        
+        # Get basic counts
+        total_books = db.session.query(func.count(IssuedBook.id)).filter_by(member_id=member_id).scalar() or 0
+        current_books = db.session.query(func.count(IssuedBook.id)).filter_by(
+            member_id=member_id, return_date=None).scalar() or 0
+        overdue_books = db.session.query(func.count(IssuedBook.id)).filter(
+            IssuedBook.member_id == member_id,
+            IssuedBook.return_date == None,
+            IssuedBook.due_date < today
+        ).scalar() or 0
+        
+        # Calculate total fines
+        total_fines = db.session.query(func.sum(IssuedBook.fine_amount)).filter_by(
+            member_id=member_id).scalar() or 0
+            
+        # Get favorite categories
+        favorite_categories = db.session.query(
+            Book.category, func.count(IssuedBook.id).label('count')
+        ).join(IssuedBook, IssuedBook.book_id == Book.id
+        ).filter(IssuedBook.member_id == member_id
+        ).group_by(Book.category
+        ).order_by(func.count(IssuedBook.id).desc()
+        ).limit(3).all()
+        
+        # Get reading frequency by month
+        monthly_reading = db.session.query(
+            func.to_char(IssuedBook.issue_date, 'YYYY-MM').label('month'),
+            func.count(IssuedBook.id)
+        ).filter(IssuedBook.member_id == member_id
+        ).group_by('month'
+        ).order_by('month').all()
+        
+        # Calculate reading velocity (avg days to finish a book)
+        completed_books = db.session.query(
+            func.avg(func.extract('day', IssuedBook.return_date) - func.extract('day', IssuedBook.issue_date))
+        ).filter(
+            IssuedBook.member_id == member_id,
+            IssuedBook.return_date != None
+        ).scalar() or 0
+        
+        return {
+            'total_books': total_books,
+            'current_books': current_books,
+            'overdue_books': overdue_books,
+            'total_fines': total_fines,
+            'favorite_categories': favorite_categories,
+            'monthly_reading': monthly_reading,
+            'avg_reading_days': round(completed_books, 1)
+        }
+    except Exception as e:
+        current_app.logger.error(f"Error getting member stats: {str(e)}")
+        return {
+            'total_books': 0,
+            'current_books': 0,
+            'overdue_books': 0,
+            'total_fines': 0,
+            'favorite_categories': [],
+            'monthly_reading': [],
+            'avg_reading_days': 0
+        }
