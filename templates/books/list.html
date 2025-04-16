@@ -1,79 +1,84 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col-md-8">
-        <h1 class="display-5">Book Catalog</h1>
-        <p class="lead text-muted">Browse and search our book collection</p>
-    </div>
-    {% if current_user.is_authenticated and current_user.is_admin %}
-    <div class="col-md-4 text-md-end">
-        <a href="{{ url_for('books.add') }}" class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i>Add New Book
-        </a>
-        <a href="{{ url_for('books.tags') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-tags me-2"></i>Manage Tags
-        </a>
-    </div>
-    {% endif %}
-</div>
-
-<!-- Search and Filter Form -->
-<div class="card mb-4">
-    <div class="card-body">
-        <form method="GET" action="{{ url_for('books.list') }}">
-            <div class="row g-3">
-                <div class="col-md-5">
-                    {{ form.search_term.label(class="form-label") }}
-                    {{ form.search_term(class="form-control", placeholder="Enter title, author or ISBN") }}
-                </div>
-                <div class="col-md-2">
-                    {{ form.category.label(class="form-label") }}
-                    {{ form.category(class="form-select") }}
-                </div>
-                <div class="col-md-2">
-                    {{ form.status.label(class="form-label") }}
-                    {{ form.status(class="form-select") }}
-                </div>
-                <div class="col-md-2">
-                    {{ form.tag.label(class="form-label") }}
-                    {{ form.tag(class="form-select") }}
-                </div>
-                <div class="col-md-1 d-flex align-items-end">
-                    {{ form.submit(class="btn btn-primary w-100") }}
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Books List -->
-{% if books %}
-<div class="book-grid mb-4">
-    {% for book in books %}
-    <div class="card book-card">
-        {% if book.cover_thumbnail %}
-        <img src="{{ url_for('static', filename='uploads/thumbnails/' + book.cover_thumbnail) }}" class="card-img book-cover-md mx-auto mt-3" alt="{{ book.title }}">
-        {% else %}
-        <img src="{{ url_for('static', filename='img/default-book-cover.svg') }}" class="card-img book-cover-md mx-auto mt-3" alt="{{ book.title }}">
+<!-- Header with modern look -->
+<div class="books-header mb-5">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1 class="display-5">Book Collection</h1>
+            <p class="lead text-muted">Discover and explore our extensive library</p>
+        </div>
+        {% if current_user.is_authenticated and current_user.is_admin %}
+        <div class="col-md-4 text-md-end">
+            <a href="{{ url_for('books.add') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Add New Book
+            </a>
+            <a href="{{ url_for('books.tags') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-tags me-2"></i>Manage Tags
+            </a>
+        </div>
         {% endif %}
-        
-        <div class="card-img-overlay">
-            <div class="mt-auto">
-                <div class="mb-2">
-                    <span class="badge {% if book.status == 'available' %}status-available{% else %}status-issued{% endif %}">
-                        {{ book.status|capitalize }}
-                    </span>
-                    {% if book.category %}
-                    <span class="badge bg-info">{{ book.category }}</span>
-                    {% endif %}
+    </div>
+</div>
+
+<!-- Search and Filter Form with improved styling -->
+<div class="search-container mb-5">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title mb-3"><i class="fas fa-search me-2"></i>Find Your Next Read</h5>
+            <form method="GET" action="{{ url_for('books.list') }}">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        {{ form.search_term.label(class="form-label") }}
+                        {{ form.search_term(class="form-control", placeholder="Enter title, author or ISBN") }}
+                    </div>
+                    <div class="col-md-2">
+                        {{ form.category.label(class="form-label") }}
+                        {{ form.category(class="form-select") }}
+                    </div>
+                    <div class="col-md-2">
+                        {{ form.status.label(class="form-label") }}
+                        {{ form.status(class="form-select") }}
+                    </div>
+                    <div class="col-md-2">
+                        {{ form.tag.label(class="form-label") }}
+                        {{ form.tag(class="form-select") }}
+                    </div>
+                    <div class="col-md-1 d-flex align-items-end">
+                        {{ form.submit(class="btn btn-primary w-100") }}
+                    </div>
                 </div>
-                
-                <div class="mt-2">
-                    <a href="{{ url_for('books.view', book_id=book.id) }}" class="btn btn-sm btn-primary">Details</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Books Grid with modern block-based design -->
+{% if books %}
+<div class="book-grid mb-5">
+    {% for book in books %}
+    <div class="book-card">
+        <div class="book-status">
+            <span class="badge {% if book.status == 'available' %}status-available{% else %}status-issued{% endif %}">
+                {{ book.status|capitalize }}
+            </span>
+        </div>
+        
+        <div class="book-cover-container">
+            {% if book.cover_thumbnail %}
+            <img src="{{ url_for('static', filename='uploads/thumbnails/' + book.cover_thumbnail) }}" 
+                 class="book-cover" alt="{{ book.title }}">
+            {% else %}
+            <img src="{{ url_for('static', filename='img/default-book-cover.svg') }}" 
+                 class="book-cover" alt="{{ book.title }}">
+            {% endif %}
+            
+            <div class="book-overlay">
+                <div class="book-actions">
+                    <a href="{{ url_for('books.view', book_id=book.id) }}" class="btn btn-light">Details</a>
                     
                     {% if current_user.is_authenticated and current_user.is_admin %}
-                    <a href="{{ url_for('books.edit', book_id=book.id) }}" class="btn btn-sm btn-outline-light">
+                    <a href="{{ url_for('books.edit', book_id=book.id) }}" class="btn btn-outline-light">
                         <i class="fas fa-edit"></i>
                     </a>
                     {% endif %}
@@ -81,27 +86,35 @@
             </div>
         </div>
         
-        <div class="card-body">
-            <h5 class="card-title">{{ book.title }}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">by {{ book.author }}</h6>
+        <div class="book-info">
+            <h3 class="book-title">{{ book.title }}</h3>
+            <p class="book-author">by {{ book.author }}</p>
             
             {% if book.average_rating > 0 %}
-            <div class="mb-2 rating-stars">
-                {% for i in range(5) %}
-                <i class="fas fa-star {% if i < book.average_rating|round(0, 'floor') %}filled{% else %}empty{% endif %}"></i>
+            <div class="book-rating">
+                <div class="rating-stars">
+                    {% for i in range(5) %}
+                    <i class="fas fa-star {% if i < book.average_rating|round(0, 'floor') %}filled{% else %}empty{% endif %}"></i>
+                    {% endfor %}
+                </div>
+                <small class="text-muted ms-2">({{ book.total_ratings }})</small>
+            </div>
+            {% endif %}
+            
+            {% if book.category %}
+            <div class="mt-2">
+                <span class="badge bg-info">{{ book.category }}</span>
+            </div>
+            {% endif %}
+            
+            {% if book.tags %}
+            <div class="book-tags">
+                {% for tag in book.tags %}
+                <span class="book-tag">{{ tag.name }}</span>
                 {% endfor %}
-                <small class="text-muted ms-1">({{ book.total_ratings }})</small>
             </div>
             {% endif %}
         </div>
-        
-        {% if book.tags %}
-        <div class="card-footer">
-            {% for tag in book.tags %}
-            <span class="book-tag">{{ tag.name }}</span>
-            {% endfor %}
-        </div>
-        {% endif %}
     </div>
     {% endfor %}
 </div>
