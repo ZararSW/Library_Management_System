@@ -1,0 +1,142 @@
+Create a Flask-based Library Management System with the following features:
+
+1. User Authentication & Authorization:
+   - Two user roles: Admin and Regular User
+   - Default admin account (admin:admin) created during initialization
+   - Regular users can register themselves
+   - Only admins can create other admin accounts
+   - Session-based authentication with 7-day remember me option
+
+2. Book Management:
+   - CRUD operations for books
+   - Book details: title, author, category, ISBN, publication year, description
+   - Cover image upload with thumbnail generation
+   - Book status tracking (available, issued)
+   - Book categorization and tagging system
+   - Search functionality (title, author, ISBN)
+   - Filtering by category, status, and tags
+
+3. Member Management (Admin only):
+   - CRUD operations for library members
+   - Member details: name, email, phone, address, membership type, expiry date
+   - Member activity tracking
+
+4. Book Circulation:
+   - Issue books to members
+   - Track due dates and returns
+   - Calculate fines for overdue books
+   - Book reservation system
+   - Export issued books data to CSV
+
+5. Reviews and Recommendations:
+   - Rating system (1-5 stars)
+   - Review comments
+   - Book recommendations based on:
+     - Member's reading history
+     - Book ratings
+     - Category preferences
+
+6. Dashboard and Analytics (Admin only):
+   - Key statistics (total books, members, issued books, overdue books)
+   - Category distribution
+   - Popular books
+   - Recent issues
+   - Overdue books
+   - Member activity
+
+7. Technical Requirements:
+   - Flask framework
+   - SQLAlchemy ORM with SQLite database
+   - Bootstrap 5 for frontend
+   - Font Awesome icons
+   - Chart.js for analytics
+   - Secure password hashing
+   - File upload handling
+   - Image processing for thumbnails
+   - Responsive design
+
+8. Security Features:
+   - Role-based access control
+   - Protected routes with decorators
+   - Secure session management
+   - Input validation
+   - CSRF protection
+   - Secure file upload handling
+
+9. Database Schema:
+   - Users table (id, username, email, password_hash, is_admin, created_at, last_login)
+   - Books table (id, title, author, category, status, isbn, publication_year, description, cover_image, cover_thumbnail, average_rating, total_ratings, created_at)
+   - Members table (id, name, email, phone, address, membership_type, membership_expiry, created_at)
+   - IssuedBooks table (id, member_id, book_id, issue_date, due_date, return_date, fine_amount)
+   - BookReviews table (id, book_id, member_id, rating, review_text, created_at)
+   - BookReservations table (id, book_id, member_id, reservation_date, status, notification_sent)
+   - BookTags table (id, name)
+   - BookTagAssociations table (book_id, tag_id)
+
+10. File Structure:
+    - app.py (main application)
+    - models.py (database models)
+    - utils.py (helper functions)
+    - static/
+      - uploads/
+        - originals/
+        - thumbnails/
+      - css/
+      - js/
+    - templates/
+      - base.html
+      - auth/
+        - login.html
+        - register.html
+        - profile.html
+        - edit_profile.html
+        - create_admin.html
+        - users.html
+        - view_user.html
+      - books/
+        - list.html
+        - add.html
+        - edit.html
+        - view.html
+      - members/
+        - list.html
+        - add.html
+        - edit.html
+        - view.html
+      - issued_books/
+        - list.html
+        - add.html
+      - reservations/
+        - list.html
+      - recommendations.html
+      - dashboard.html
+      - index.html
+
+11. Key Features Implementation:
+    - Image upload and thumbnail generation
+    - Book search with autocomplete
+    - Member activity tracking
+    - Book recommendation algorithm
+    - Fine calculation system
+    - Export functionality
+    - Dashboard analytics
+
+12. Navigation Structure:
+    - Public:
+      - Home
+      - Books
+      - Login
+      - Register
+    - Logged-in Users:
+      - Books
+      - Recommendations
+      - Profile
+    - Admin:
+      - All user features
+      - Members
+      - Issued Books
+      - Reservations
+      - Dashboard
+      - User Management
+
+The system should be well-documented, maintainable, and follow best practices for Flask development. Include proper error handling, input validation, and security measures throughout the application.
