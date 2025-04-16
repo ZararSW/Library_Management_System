@@ -49,63 +49,59 @@
 
 <!-- Books List -->
 {% if books %}
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+<div class="book-grid mb-4">
     {% for book in books %}
-    <div class="col">
-        <div class="card h-100 book-card">
-            <div class="row g-0">
-                <div class="col-4 d-flex align-items-center justify-content-center p-2">
-                    {% if book.cover_thumbnail %}
-                    <img src="{{ url_for('static', filename='uploads/thumbnails/' + book.cover_thumbnail) }}" class="book-cover" alt="{{ book.title }}">
-                    {% else %}
-                    <div class="book-cover d-flex align-items-center justify-content-center bg-light text-secondary">
-                        <i class="fas fa-book fa-3x"></i>
-                    </div>
+    <div class="card book-card">
+        {% if book.cover_thumbnail %}
+        <img src="{{ url_for('static', filename='uploads/thumbnails/' + book.cover_thumbnail) }}" class="card-img book-cover-md mx-auto mt-3" alt="{{ book.title }}">
+        {% else %}
+        <img src="{{ url_for('static', filename='img/default-book-cover.svg') }}" class="card-img book-cover-md mx-auto mt-3" alt="{{ book.title }}">
+        {% endif %}
+        
+        <div class="card-img-overlay">
+            <div class="mt-auto">
+                <div class="mb-2">
+                    <span class="badge {% if book.status == 'available' %}status-available{% else %}status-issued{% endif %}">
+                        {{ book.status|capitalize }}
+                    </span>
+                    {% if book.category %}
+                    <span class="badge bg-info">{{ book.category }}</span>
                     {% endif %}
                 </div>
-                <div class="col-8">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ book.title }}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">by {{ book.author }}</h6>
-                        
-                        <div class="mb-2">
-                            <span class="badge {% if book.status == 'available' %}status-available{% else %}status-issued{% endif %}">
-                                {{ book.status|capitalize }}
-                            </span>
-                            {% if book.category %}
-                            <span class="badge bg-info">{{ book.category }}</span>
-                            {% endif %}
-                        </div>
-                        
-                        {% if book.average_rating > 0 %}
-                        <div class="mb-2 rating-stars">
-                            {% for i in range(5) %}
-                            <i class="fas fa-star {% if i < book.average_rating|round(0, 'floor') %}filled{% else %}empty{% endif %}"></i>
-                            {% endfor %}
-                            <small class="text-muted ms-1">({{ book.total_ratings }})</small>
-                        </div>
-                        {% endif %}
-                        
-                        <div class="mt-2">
-                            <a href="{{ url_for('books.view', book_id=book.id) }}" class="btn btn-sm btn-outline-primary">Details</a>
-                            
-                            {% if current_user.is_authenticated and current_user.is_admin %}
-                            <a href="{{ url_for('books.edit', book_id=book.id) }}" class="btn btn-sm btn-outline-secondary">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            {% endif %}
-                        </div>
-                    </div>
+                
+                <div class="mt-2">
+                    <a href="{{ url_for('books.view', book_id=book.id) }}" class="btn btn-sm btn-primary">Details</a>
+                    
+                    {% if current_user.is_authenticated and current_user.is_admin %}
+                    <a href="{{ url_for('books.edit', book_id=book.id) }}" class="btn btn-sm btn-outline-light">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    {% endif %}
                 </div>
             </div>
-            {% if book.tags %}
-            <div class="card-footer">
-                {% for tag in book.tags %}
-                <span class="book-tag">{{ tag.name }}</span>
+        </div>
+        
+        <div class="card-body">
+            <h5 class="card-title">{{ book.title }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">by {{ book.author }}</h6>
+            
+            {% if book.average_rating > 0 %}
+            <div class="mb-2 rating-stars">
+                {% for i in range(5) %}
+                <i class="fas fa-star {% if i < book.average_rating|round(0, 'floor') %}filled{% else %}empty{% endif %}"></i>
                 {% endfor %}
+                <small class="text-muted ms-1">({{ book.total_ratings }})</small>
             </div>
             {% endif %}
         </div>
+        
+        {% if book.tags %}
+        <div class="card-footer">
+            {% for tag in book.tags %}
+            <span class="book-tag">{{ tag.name }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
     </div>
     {% endfor %}
 </div>
