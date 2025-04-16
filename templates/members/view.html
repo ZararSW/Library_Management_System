@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('members.list') }}">Members</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ member.name }}</li>
+            </ol>
+        </nav>
+        <h1 class="display-5">{{ member.name }}</h1>
+        <p class="lead text-muted">Member Details and Activity</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('members.edit', member_id=member.id) }}" class="btn btn-primary">
+            <i class="fas fa-edit me-2"></i>Edit Member
+        </a>
+        <a href="{{ url_for('circulation.issue_book') }}" class="btn btn-success">
+            <i class="fas fa-share me-2"></i>Issue Book
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Member Information</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Name</label>
+                    <p>{{ member.name }}</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Email</label>
+                    <p>{{ member.email }}</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Phone</label>
+                    <p>{{ member.phone }}</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Address</label>
+                    <p>{{ member.address }}</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Membership Type</label>
+                    <p>
+                        <span class="badge {% if member.membership_type == 'premium' %}bg-warning{% else %}bg-info{% endif %}">
+                            {{ member.membership_type|capitalize }}
+                        </span>
+                    </p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Membership Expiry</label>
+                    <p>
+                        {{ member.membership_expiry.strftime('%Y-%m-%d') }}
+                        {% if member.membership_expiry < now().date() %}
+                        <span class="badge bg-danger ms-1">Expired</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Member Since</label>
+                    <p>{{ member.created_at.strftime('%Y-%m-%d') }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Activity Summary</h3>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <div class="h3">{{ stats.total_books }}</div>
+                        <div class="text-muted">Total Books</div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="h3">{{ stats.current_books }}</div>
+                        <div class="text-muted">Current Books</div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="h3">{{ stats.overdue_books }}</div>
+                        <div class="text-muted">Overdue Books</div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="h3">${{ stats.total_fines|round(2) }}</div>
+                        <div class="text-muted">Total Fines</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0">Current Books</h3>
+                <a href="{{ url_for('circulation.issue_book') }}" class="btn btn-sm btn-success">
+                    <i class="fas fa-plus me-1"></i>Issue New Book
+                </a>
+            </div>
+            <div class="card-body">
+                {% if issued_books|selectattr('return_date', 'none')|list %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Book</th>
+                                <th>Issue Date</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in issued_books %}
+                                {% if not record.return_date %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('books.view', book_id=record.book.id) }}">{{ record.book.title }}</a>
+                                        <small class="text-muted d-block">{{ record.book.author }}</small>
+                                    </td>
+                                    <td>{{ record.issue_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ record.due_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        {% if record.due_date < now().date() %}
+                                        <span class="badge status-overdue">Overdue</span>
+                                        {% else %}
+                                        <span class="badge status-issued">Active</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('circulation.return_book', issued_id=record.id) }}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-undo-alt me-1"></i>Return
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>This member does not have any books currently issued.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Borrow History</h3>
+            </div>
+            <div class="card-body">
+                {% if issued_books %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Book</th>
+                                <th>Issue Date</th>
+                                <th>Due Date</th>
+                                <th>Return Date</th>
+                                <th>Fine</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in issued_books|sort(attribute='issue_date', reverse=true) %}
+                                {% if record.return_date %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('books.view', book_id=record.book.id) }}">{{ record.book.title }}</a>
+                                        <small class="text-muted d-block">{{ record.book.author }}</small>
+                                    </td>
+                                    <td>{{ record.issue_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ record.due_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ record.return_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        {% if record.fine_amount > 0 %}
+                                        <span class="text-danger">${{ record.fine_amount }}</span>
+                                        {% else %}
+                                        <span class="text-success">$0.00</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>This member does not have any borrowing history.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

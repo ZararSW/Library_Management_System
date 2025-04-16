@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('members.list') }}">Members</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Add New Member</li>
+            </ol>
+        </nav>
+        <h1 class="display-5">Add New Member</h1>
+        <p class="lead text-muted">Register a new library member</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Member Information</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('members.add') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ form.name.label(class="form-label") }}
+                            {% if form.name.errors %}
+                                {{ form.name(class="form-control is-invalid") }}
+                                {% for error in form.name.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            {% else %}
+                                {{ form.name(class="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.email.label(class="form-label") }}
+                            {% if form.email.errors %}
+                                {{ form.email(class="form-control is-invalid") }}
+                                {% for error in form.email.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            {% else %}
+                                {{ form.email(class="form-control") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ form.phone.label(class="form-label") }}
+                            {% if form.phone.errors %}
+                                {{ form.phone(class="form-control is-invalid") }}
+                                {% for error in form.phone.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            {% else %}
+                                {{ form.phone(class="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.membership_type.label(class="form-label") }}
+                            {% if form.membership_type.errors %}
+                                {{ form.membership_type(class="form-select is-invalid") }}
+                                {% for error in form.membership_type.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            {% else %}
+                                {{ form.membership_type(class="form-select") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.address.label(class="form-label") }}
+                        {% if form.address.errors %}
+                            {{ form.address(class="form-control is-invalid", rows=3) }}
+                            {% for error in form.address.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        {% else %}
+                            {{ form.address(class="form-control", rows=3) }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.membership_expiry.label(class="form-label") }}
+                        {% if form.membership_expiry.errors %}
+                            {{ form.membership_expiry(class="form-control is-invalid") }}
+                            {% for error in form.membership_expiry.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        {% else %}
+                            {{ form.membership_expiry(class="form-control") }}
+                        {% endif %}
+                        <div class="form-text">Default is one year from today</div>
+                    </div>
+                    
+                    <div class="d-flex mt-4">
+                        <a href="{{ url_for('members.list') }}" class="btn btn-outline-secondary me-2">Cancel</a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Membership Info</h3>
+            </div>
+            <div class="card-body">
+                <h5>Standard Membership</h5>
+                <ul class="mb-4">
+                    <li>Borrow up to 3 books simultaneously</li>
+                    <li>Book loans for 14 days</li>
+                    <li>No access to rare collections</li>
+                    <li>Standard renewal options</li>
+                </ul>
+                
+                <h5>Premium Membership</h5>
+                <ul>
+                    <li>Borrow up to 8 books simultaneously</li>
+                    <li>Book loans for 30 days</li>
+                    <li>Access to rare collections</li>
+                    <li>Extended renewal options</li>
+                    <li>Priority reservations</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

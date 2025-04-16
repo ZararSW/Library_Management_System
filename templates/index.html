@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12 text-center">
+        <h1 class="display-4">Welcome to the Library Management System</h1>
+        <p class="lead text-muted">Explore our collection of books and manage your reading experience</p>
+        
+        <div class="mt-4">
+            <a href="{{ url_for('books.list') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-book me-2"></i>Browse Books
+            </a>
+            
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('reviews.recommendations') }}" class="btn btn-outline-secondary btn-lg ms-2">
+                    <i class="fas fa-thumbs-up me-2"></i>Get Recommendations
+                </a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-secondary btn-lg ms-2">
+                    <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-md-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                <h3 class="card-title">Find Books</h3>
+                <p class="card-text">Search our extensive catalog of books by title, author, or ISBN.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="fas fa-bookmark fa-3x text-warning mb-3"></i>
+                <h3 class="card-title">Borrow Books</h3>
+                <p class="card-text">Check out books from our library and manage your borrowing history.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="fas fa-star fa-3x text-success mb-3"></i>
+                <h3 class="card-title">Rate & Review</h3>
+                <p class="card-text">Share your thoughts and read reviews from other members.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if current_user.is_authenticated and current_user.is_admin %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">Admin Quick Links</h3>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <a href="{{ url_for('dashboard.index') }}" class="btn btn-outline-primary btn-lg d-block mb-3">
+                            <i class="fas fa-chart-line mb-2 d-block fa-2x"></i>
+                            Dashboard
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('members.list') }}" class="btn btn-outline-success btn-lg d-block mb-3">
+                            <i class="fas fa-users mb-2 d-block fa-2x"></i>
+                            Members
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('circulation.issued_books') }}" class="btn btn-outline-info btn-lg d-block mb-3">
+                            <i class="fas fa-exchange-alt mb-2 d-block fa-2x"></i>
+                            Circulation
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('books.add') }}" class="btn btn-outline-warning btn-lg d-block mb-3">
+                            <i class="fas fa-plus-circle mb-2 d-block fa-2x"></i>
+                            Add Books
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">About Our Library</h3>
+            </div>
+            <div class="card-body">
+                <p>Our library management system provides an efficient and user-friendly platform for managing all aspects of a modern library. With features designed for both administrators and regular users, we aim to create a seamless experience for everyone.</p>
+                <p>Administrators can manage books, members, and track circulation, while users can browse the catalog, review books, and get personalized recommendations.</p>
+                <p>Whether you're a book enthusiast or a library administrator, our system has something for you!</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Key Features</h3>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex align-items-center">
+                        <i class="fas fa-check-circle text-success me-3"></i>
+                        Book management with detailed information
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <i class="fas fa-check-circle text-success me-3"></i>
+                        Member registration and tracking
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <i class="fas fa-check-circle text-success me-3"></i>
+                        Book issuance and return handling
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <i class="fas fa-check-circle text-success me-3"></i>
+                        Fine calculation for overdue books
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <i class="fas fa-check-circle text-success me-3"></i>
+                        Comprehensive analytics and reporting
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

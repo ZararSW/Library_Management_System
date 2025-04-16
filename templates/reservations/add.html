@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('circulation.reservations') }}">Reservations</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Reserve Book</li>
+            </ol>
+        </nav>
+        <h1 class="display-5">Reserve a Book</h1>
+        <p class="lead text-muted">Place a reservation for a currently issued book</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Reservation Details</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('circulation.reserve_book') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.member_id.label(class="form-label") }}
+                        {% if form.member_id.errors %}
+                            {{ form.member_id(class="form-select is-invalid") }}
+                            {% for error in form.member_id.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        {% else %}
+                            {{ form.member_id(class="form-select") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.book_id.label(class="form-label") }}
+                        {% if form.book_id.errors %}
+                            {{ form.book_id(class="form-select is-invalid") }}
+                            {% for error in form.book_id.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        {% else %}
+                            {{ form.book_id(class="form-select") }}
+                        {% endif %}
+                        <div class="form-text">Only currently issued books are available for reservation</div>
+                    </div>
+                    
+                    <div class="d-flex mt-4">
+                        <a href="{{ url_for('circulation.reservations') }}" class="btn btn-outline-secondary me-2">Cancel</a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Reservation Guidelines</h3>
+            </div>
+            <div class="card-body">
+                <h5>How Reservations Work</h5>
+                <ul class="mb-4">
+                    <li>Reservations are for currently issued books</li>
+                    <li>When the book is returned, the member will be notified</li>
+                    <li>Reserved books are held for 48 hours</li>
+                    <li>Premium members get priority in the reservation queue</li>
+                    <li>Members can only reserve up to 3 books at a time</li>
+                </ul>
+                
+                <h5>Important Notes</h5>
+                <ul>
+                    <li>Verify the member has an active membership</li>
+                    <li>Reservations can be cancelled at any time</li>
+                    <li>Multiple members may reserve the same book</li>
+                    <li>Reservations are processed in first-come, first-served order</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

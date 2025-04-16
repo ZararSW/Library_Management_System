@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="display-5">Book Catalog</h1>
+        <p class="lead text-muted">Browse and search our book collection</p>
+    </div>
+    {% if current_user.is_authenticated and current_user.is_admin %}
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('books.add') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add New Book
+        </a>
+        <a href="{{ url_for('books.tags') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-tags me-2"></i>Manage Tags
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Search and Filter Form -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('books.list') }}">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    {{ form.search_term.label(class="form-label") }}
+                    {{ form.search_term(class="form-control", placeholder="Enter title, author or ISBN") }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.category.label(class="form-label") }}
+                    {{ form.category(class="form-select") }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.status.label(class="form-label") }}
+                    {{ form.status(class="form-select") }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.tag.label(class="form-label") }}
+                    {{ form.tag(class="form-select") }}
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    {{ form.submit(class="btn btn-primary w-100") }}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Books List -->
+{% if books %}
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for book in books %}
+    <div class="col">
+        <div class="card h-100 book-card">
+            <div class="row g-0">
+                <div class="col-4 d-flex align-items-center justify-content-center p-2">
+                    {% if book.cover_thumbnail %}
+                    <img src="{{ url_for('static', filename='uploads/thumbnails/' + book.cover_thumbnail) }}" class="book-cover" alt="{{ book.title }}">
+                    {% else %}
+                    <div class="book-cover d-flex align-items-center justify-content-center bg-light text-secondary">
+                        <i class="fas fa-book fa-3x"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-8">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ book.title }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">by {{ book.author }}</h6>
+                        
+                        <div class="mb-2">
+                            <span class="badge {% if book.status == 'available' %}status-available{% else %}status-issued{% endif %}">
+                                {{ book.status|capitalize }}
+                            </span>
+                            {% if book.category %}
+                            <span class="badge bg-info">{{ book.category }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        {% if book.average_rating > 0 %}
+                        <div class="mb-2 rating-stars">
+                            {% for i in range(5) %}
+                            <i class="fas fa-star {% if i < book.average_rating|round(0, 'floor') %}filled{% else %}empty{% endif %}"></i>
+                            {% endfor %}
+                            <small class="text-muted ms-1">({{ book.total_ratings }})</small>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="mt-2">
+                            <a href="{{ url_for('books.view', book_id=book.id) }}" class="btn btn-sm btn-outline-primary">Details</a>
+                            
+                            {% if current_user.is_authenticated and current_user.is_admin %}
+                            <a href="{{ url_for('books.edit', book_id=book.id) }}" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if book.tags %}
+            <div class="card-footer">
+                {% for tag in book.tags %}
+                <span class="book-tag">{{ tag.name }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+    <i class="fas fa-info-circle me-2"></i>No books found matching your criteria. Try adjusting your search or filters.
+</div>
+{% endif %}
+{% endblock %}

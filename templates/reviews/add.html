@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('books.list') }}">Books</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('books.view', book_id=book.id) }}">{{ book.title }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Write Review</li>
+            </ol>
+        </nav>
+        <h1 class="display-5">Review Book</h1>
+        <p class="lead text-muted">Share your thoughts about "{{ book.title }}"</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Your Review</h3>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-3 text-center">
+                        {% if book.cover_thumbnail %}
+                        <img src="{{ url_for('static', filename='uploads/thumbnails/' + book.cover_thumbnail) }}" class="book-cover" alt="{{ book.title }}">
+                        {% else %}
+                        <div class="book-cover d-flex align-items-center justify-content-center bg-light text-secondary">
+                            <i class="fas fa-book fa-3x"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-9">
+                        <h4>{{ book.title }}</h4>
+                        <h6 class="text-muted">by {{ book.author }}</h6>
+                        <p class="mt-2">{{ book.description[:200] }}{% if book.description|length > 200 %}...{% endif %}</p>
+                    </div>
+                </div>
+                
+                <form method="POST" action="{{ url_for('reviews.add_review', book_id=book.id) }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Your Rating</label>
+                        <div class="rating-stars mb-2" style="font-size: 2rem;">
+                            <input type="hidden" id="rating" name="rating" value="{{ form.rating.data or 0 }}">
+                            {% for i in range(1, 6) %}
+                            <i id="star-{{ i }}" class="fas fa-star {% if form.rating.data and i <= form.rating.data %}filled{% else %}empty{% endif %}" 
+                               style="cursor: pointer;" onclick="selectRating({{ i }})"></i>
+                            {% endfor %}
+                        </div>
+                        {% if form.rating.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.rating.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.review_text.label(class="form-label") }}
+                        {% if form.review_text.errors %}
+                            {{ form.review_text(class="form-control is-invalid", rows=6, placeholder="Share your thoughts about this book...") }}
+                            {% for error in form.review_text.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        {% else %}
+                            {{ form.review_text(class="form-control", rows=6, placeholder="Share your thoughts about this book...") }}
+                        {% endif %}
+                        <div class="form-text">The review is optional, but helps other readers</div>
+                    </div>
+                    
+                    <div class="d-flex mt-4">
+                        <a href="{{ url_for('books.view', book_id=book.id) }}" class="btn btn-outline-secondary me-2">Cancel</a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Review Guidelines</h3>
+            </div>
+            <div class="card-body">
+                <h5>Helpful Review Tips</h5>
+                <ul class="mb-4">
+                    <li>Be honest and specific about your experience</li>
+                    <li>Avoid spoilers or use spoiler warnings</li>
+                    <li>Mention what you liked and didn't like</li>
+                    <li>Keep the review focused on the book itself</li>
+                    <li>Consider the writing style, plot, characters, and pacing</li>
+                </ul>
+                
+                <h5>Review Policy</h5>
+                <ul>
+                    <li>Reviews should be respectful and constructive</li>
+                    <li>Personal attacks are not allowed</li>
+                    <li>You can edit or delete your review at any time</li>
+                    <li>Your review helps improve our recommendations system</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// This is now handled by the main.js file
+</script>
+{% endblock %}

@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1 class="display-5">Admin Dashboard</h1>
+        <p class="lead text-muted">Overview and analytics of the library system</p>
+    </div>
+</div>
+
+<!-- Key Stats -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card stat-books">
+            <div class="card-body text-center">
+                <div class="display-4">{{ stats.total_books }}</div>
+                <h5 class="card-title">Total Books</h5>
+                <a href="{{ url_for('books.list') }}" class="btn btn-sm btn-outline-primary mt-2">View Books</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stat-card stat-members">
+            <div class="card-body text-center">
+                <div class="display-4">{{ stats.total_members }}</div>
+                <h5 class="card-title">Members</h5>
+                <a href="{{ url_for('members.list') }}" class="btn btn-sm btn-outline-success mt-2">View Members</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stat-card stat-issued">
+            <div class="card-body text-center">
+                <div class="display-4">{{ stats.total_issued }}</div>
+                <h5 class="card-title">Issued Books</h5>
+                <a href="{{ url_for('circulation.issued_books') }}" class="btn btn-sm btn-outline-warning mt-2">View Issues</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card stat-card stat-overdue">
+            <div class="card-body text-center">
+                <div class="display-4">{{ stats.total_overdue }}</div>
+                <h5 class="card-title">Overdue Books</h5>
+                <a href="{{ url_for('circulation.issued_books', status='not_returned') }}" class="btn btn-sm btn-outline-danger mt-2">View Overdue</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <!-- Category Distribution Chart -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Book Categories</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="categoryChart" data-labels="{{ category_data.labels | tojson }}" data-categories="{{ category_data.data | tojson }}"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Monthly Issues Chart -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Monthly Book Issues</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="monthlyChart" data-labels="{{ monthly_data.labels | tojson }}" data-values="{{ monthly_data.data | tojson }}"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <!-- Ratings Distribution Chart -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Book Ratings Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="ratingsChart" data-labels="{{ ratings_data.labels | tojson }}" data-values="{{ ratings_data.data | tojson }}"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Popular Books -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Popular Books</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for book, count in popular_books %}
+                        <a href="{{ url_for('books.view', book_id=book.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">{{ book.title }}</h6>
+                                <small>by {{ book.author }}</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">{{ count }} issues</span>
+                        </a>
+                    {% else %}
+                        <div class="text-center text-muted p-3">No data available</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Issues -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Recent Book Issues</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for issue in recent_issues %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ issue.book.title }}</h6>
+                                <small>{{ issue.issue_date.strftime('%Y-%m-%d') }}</small>
+                            </div>
+                            <p class="mb-1">Issued to: {{ issue.member.name }}</p>
+                            <small class="text-muted">Due: {{ issue.due_date.strftime('%Y-%m-%d') }}</small>
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted p-3">No recent issues</div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('circulation.issued_books') }}" class="btn btn-sm btn-primary">View All</a>
+                <a href="{{ url_for('circulation.export_csv') }}" class="btn btn-sm btn-outline-secondary">Export CSV</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Active Members -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Most Active Members</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for member, count in active_members %}
+                        <a href="{{ url_for('members.view', member_id=member.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">{{ member.name }}</h6>
+                                <small>{{ member.email }}</small>
+                            </div>
+                            <span class="badge bg-success rounded-pill">{{ count }} books</span>
+                        </a>
+                    {% else %}
+                        <div class="text-center text-muted p-3">No data available</div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('members.list') }}" class="btn btn-sm btn-primary">View All Members</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+{% endblock %}

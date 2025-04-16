@@ -1,0 +1,149 @@
+/* Custom styles for the library management system */
+
+/* Cover image thumbnails */
+.book-cover {
+    width: 150px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.book-cover-sm {
+    width: 80px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 3px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.book-cover-lg {
+    width: 220px;
+    height: 320px;
+    object-fit: cover;
+    border-radius: 5px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Book details card */
+.book-card {
+    height: 100%;
+    transition: transform 0.3s ease;
+}
+
+.book-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Rating stars */
+.rating-stars .filled {
+    color: var(--bs-warning);
+}
+
+.rating-stars .empty {
+    color: var(--bs-secondary);
+}
+
+/* Book status badges */
+.status-available {
+    background-color: var(--bs-success);
+}
+
+.status-issued {
+    background-color: var(--bs-primary);
+}
+
+.status-overdue {
+    background-color: var(--bs-danger);
+}
+
+/* Dashboard stats */
+.stat-card {
+    border-left: 4px solid;
+    transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+}
+
+.stat-books {
+    border-left-color: var(--bs-primary);
+}
+
+.stat-members {
+    border-left-color: var(--bs-success);
+}
+
+.stat-issued {
+    border-left-color: var(--bs-warning);
+}
+
+.stat-overdue {
+    border-left-color: var(--bs-danger);
+}
+
+/* Auth forms */
+.auth-form {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Sidebar menu */
+.sidebar {
+    min-height: calc(100vh - 56px);
+    background-color: var(--bs-dark);
+}
+
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.75);
+    border-radius: 0;
+}
+
+.sidebar .nav-link:hover {
+    color: rgba(255, 255, 255, 1);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .nav-link.active {
+    color: white;
+    background-color: var(--bs-primary);
+}
+
+/* Footer */
+.footer {
+    margin-top: auto;
+    padding: 1rem;
+    background-color: var(--bs-dark);
+    color: var(--bs-light);
+}
+
+/* Tables */
+.table-hover tbody tr:hover {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+
+/* Reservation status badges */
+.reservation-pending {
+    background-color: var(--bs-warning);
+}
+
+.reservation-fulfilled {
+    background-color: var(--bs-success);
+}
+
+.reservation-cancelled {
+    background-color: var(--bs-secondary);
+}
+
+/* Book tags */
+.book-tag {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    margin: 0.25rem;
+    border-radius: 50rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background-color: var(--bs-info);
+    color: white;
+}

@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="display-5">Library Members</h1>
+        <p class="lead text-muted">Manage library membership</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('members.add') }}" class="btn btn-primary">
+            <i class="fas fa-user-plus me-2"></i>Add New Member
+        </a>
+    </div>
+</div>
+
+<!-- Search Bar -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('members.list') }}">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Search by name or email" value="{{ search_term }}">
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-search me-1"></i>Search
+                </button>
+                {% if search_term %}
+                <a href="{{ url_for('members.list') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-times me-1"></i>Clear
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Members List -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title mb-0">Member List</h3>
+    </div>
+    <div class="card-body">
+        {% if members %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Membership Type</th>
+                        <th>Expiry Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member in members %}
+                    <tr>
+                        <td>{{ member.id }}</td>
+                        <td>{{ member.name }}</td>
+                        <td>{{ member.email }}</td>
+                        <td>{{ member.phone }}</td>
+                        <td>
+                            <span class="badge {% if member.membership_type == 'premium' %}bg-warning{% else %}bg-info{% endif %}">
+                                {{ member.membership_type|capitalize }}
+                            </span>
+                        </td>
+                        <td>
+                            {{ member.membership_expiry.strftime('%Y-%m-%d') }}
+                            {% if member.membership_expiry < today %}
+                            <span class="badge bg-danger ms-1">Expired</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('members.view', member_id=member.id) }}" class="btn btn-sm btn-info">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{{ url_for('members.edit', member_id=member.id) }}" class="btn btn-sm btn-secondary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>No members found matching your search criteria.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

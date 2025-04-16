@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="display-5">Book Circulation</h1>
+        <p class="lead text-muted">Manage issued books and returns</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{{ url_for('circulation.issue_book') }}" class="btn btn-primary">
+            <i class="fas fa-share me-2"></i>Issue New Book
+        </a>
+        <a href="{{ url_for('circulation.export_csv') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-file-csv me-2"></i>Export CSV
+        </a>
+    </div>
+</div>
+
+<!-- Filter Options -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('circulation.issued_books') }}">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label">Filter by Member</label>
+                    <select name="member_id" class="form-select">
+                        <option value="">All Members</option>
+                        {% for member in members %}
+                        <option value="{{ member.id }}" {% if selected_member_id == member.id|string %}selected{% endif %}>{{ member.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">Filter by Status</label>
+                    <select name="status" class="form-select">
+                        <option value="all" {% if status == 'all' %}selected{% endif %}>All Books</option>
+                        <option value="not_returned" {% if status == 'not_returned' %}selected{% endif %}>Currently Issued</option>
+                        <option value="returned" {% if status == 'returned' %}selected{% endif %}>Returned Books</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Apply</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Issued Books Table -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title mb-0">
+            {% if status == 'returned' %}
+                Returned Books
+            {% elif status == 'not_returned' %}
+                Currently Issued Books
+            {% else %}
+                All Issued Books
+            {% endif %}
+        </h3>
+    </div>
+    <div class="card-body">
+        {% if issued_books %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Book</th>
+                        <th>Member</th>
+                        <th>Issue Date</th>
+                        <th>Due Date</th>
+                        <th>Return Date</th>
+                        <th>Status</th>
+                        <th>Fine</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in issued_books %}
+                    <tr>
+                        <td>{{ record.id }}</td>
+                        <td>
+                            <a href="{{ url_for('books.view', book_id=record.book.id) }}">{{ record.book.title }}</a>
+                            <small class="text-muted d-block">{{ record.book.author }}</small>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('members.view', member_id=record.member.id) }}">{{ record.member.name }}</a>
+                        </td>
+                        <td>{{ record.issue_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ record.due_date.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            {% if record.return_date %}
+                            {{ record.return_date.strftime('%Y-%m-%d') }}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if record.return_date %}
+                            <span class="badge bg-success">Returned</span>
+                            {% elif record.due_date < now().date() %}
+                            <span class="badge status-overdue">Overdue</span>
+                            {% else %}
+                            <span class="badge status-issued">Issued</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if record.fine_amount > 0 %}
+                            <span class="text-danger">${{ record.fine_amount }}</span>
+                            {% else %}
+                            $0.00
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not record.return_date %}
+                            <a href="{{ url_for('circulation.return_book', issued_id=record.id) }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-undo-alt me-1"></i>Return
+                            </a>
+                            {% else %}
+                            <button class="btn btn-sm btn-outline-secondary" disabled>
+                                <i class="fas fa-check me-1"></i>Completed
+                            </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>No issued books found matching your criteria.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
