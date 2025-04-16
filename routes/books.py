@@ -211,3 +211,40 @@ def delete_tag(tag_id):
     
     flash('Tag deleted successfully!', 'success')
     return redirect(url_for('books.tags'))
+
+@books_bp.route('/<int:book_id>/qrcode', methods=['GET'])
+@login_required
+def get_qr_code(book_id):
+    """Generate QR code for book checkout"""
+    if not current_user.is_admin:
+        return jsonify({'success': False, 'error': 'Unauthorized'}), 403
+    
+    book = Book.query.get_or_404(book_id)
+    
+    # Create QR code data with book info and checkout URL
+    qr_data = {
+        'id': book.id,
+        'title': book.title,
+        'isbn': book.isbn,
+        'checkout_url': url_for('circulation.issue_book', book_id=book.id, _external=True)
+    }
+    
+    # Generate QR code
+    qr_img = generate_qr_code(str(qr_data))
+    
+    if not qr_img:
+        return jsonify({'success': False, 'error': 'Failed to generate QR code'}), 500
+    
+    # Convert to base64 string
+    buffered = BytesIO()
+    qr_img.save(buffered)
+    img_str = base64.b64encode(buffered.getvalue()).decode('utf-8')
+    
+    return jsonify({
+        'success': True,
+        'qr_code': img_str,
+        'book': {
+            'id': book.id,
+            'title': book.title
+        }
+    })
