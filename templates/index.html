@@ -1,94 +1,131 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col-md-12 text-center">
-        <h1 class="display-4">Welcome to the Library Management System</h1>
-        <p class="lead text-muted">Explore our collection of books and manage your reading experience</p>
-        
-        <div class="mt-4">
-            <a href="{{ url_for('books.list') }}" class="btn btn-primary btn-lg">
-                <i class="fas fa-book me-2"></i>Browse Books
-            </a>
-            
-            {% if current_user.is_authenticated %}
-                <a href="{{ url_for('reviews.recommendations') }}" class="btn btn-outline-secondary btn-lg ms-2">
-                    <i class="fas fa-thumbs-up me-2"></i>Get Recommendations
-                </a>
-            {% else %}
-                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-secondary btn-lg ms-2">
-                    <i class="fas fa-sign-in-alt me-2"></i>Sign In
-                </a>
-            {% endif %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="hero-image">
+        <img src="{{ url_for('static', filename='img/hero-images/library-hero.svg') }}" alt="Library Hero" class="img-fluid">
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-md-9 hero-text">
+                    <h1 class="display-4">Your Digital Library Management System</h1>
+                    <p class="lead">Organize, manage, and discover your entire collection in one place.</p>
+                    <div class="mt-4 hero-buttons">
+                        <a href="{{ url_for('books.list') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-book me-2"></i>Browse Books
+                        </a>
+                        
+                        {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('reviews.recommendations') }}" class="btn btn-light btn-lg ms-2">
+                                <i class="fas fa-thumbs-up me-2"></i>Get Recommendations
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-light btn-lg ms-2">
+                                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="row mb-5">
+<!-- Features Section - Reimagined for Libib-style -->
+<div class="container featured-section">
+    <div class="row text-center">
+        <div class="col-md-12">
+            <h2 class="section-title">Experience the Library System</h2>
+            <p class="section-subtitle">Everything you need to manage your collection.</p>
+        </div>
+    </div>
+
+<div class="row mb-5 feature-cards">
     <div class="col-md-4">
-        <div class="card h-100 text-center">
-            <div class="card-body">
-                <i class="fas fa-search fa-3x text-primary mb-3"></i>
-                <h3 class="card-title">Find Books</h3>
-                <p class="card-text">Search our extensive catalog of books by title, author, or ISBN.</p>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-search"></i>
             </div>
+            <h3>Find Books</h3>
+            <p>Search our extensive catalog of books by title, author, or ISBN. Discover new titles with our advanced filtering.</p>
+            <a href="{{ url_for('books.list') }}" class="btn btn-outline-primary">Search Catalog</a>
         </div>
     </div>
     
     <div class="col-md-4">
-        <div class="card h-100 text-center">
-            <div class="card-body">
-                <i class="fas fa-bookmark fa-3x text-warning mb-3"></i>
-                <h3 class="card-title">Borrow Books</h3>
-                <p class="card-text">Check out books from our library and manage your borrowing history.</p>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-bookmark"></i>
             </div>
+            <h3>Borrow Books</h3>
+            <p>Check out books from our library and manage your borrowing history with ease.</p>
+            <a href="{{ url_for('circulation.issued_books') if current_user.is_authenticated and current_user.is_admin else url_for('books.list') }}" class="btn btn-outline-primary">Manage Loans</a>
         </div>
     </div>
     
     <div class="col-md-4">
-        <div class="card h-100 text-center">
-            <div class="card-body">
-                <i class="fas fa-star fa-3x text-success mb-3"></i>
-                <h3 class="card-title">Rate & Review</h3>
-                <p class="card-text">Share your thoughts and read reviews from other members.</p>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-star"></i>
             </div>
+            <h3>Rate & Review</h3>
+            <p>Share your thoughts and read reviews from other members. Help others discover great books.</p>
+            <a href="{{ url_for('reviews.recommendations') if current_user.is_authenticated else url_for('auth.login') }}" class="btn btn-outline-primary">Read Reviews</a>
         </div>
     </div>
 </div>
 
 {% if current_user.is_authenticated and current_user.is_admin %}
-<div class="row mb-4">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h3 class="card-title mb-0">Admin Quick Links</h3>
+<div class="admin-panel my-5">
+    <div class="container">
+        <div class="row text-center mb-4">
+            <div class="col-md-12">
+                <h2 class="section-title">Administration Tools</h2>
+                <p class="section-subtitle">Manage your library with powerful controls</p>
             </div>
-            <div class="card-body">
-                <div class="row text-center">
-                    <div class="col-md-3">
-                        <a href="{{ url_for('dashboard.index') }}" class="btn btn-outline-primary btn-lg d-block mb-3">
-                            <i class="fas fa-chart-line mb-2 d-block fa-2x"></i>
-                            Dashboard
-                        </a>
+        </div>
+        <div class="row text-center">
+            <div class="col-md-3">
+                <div class="admin-card">
+                    <div class="admin-icon">
+                        <i class="fas fa-chart-line"></i>
                     </div>
-                    <div class="col-md-3">
-                        <a href="{{ url_for('members.list') }}" class="btn btn-outline-success btn-lg d-block mb-3">
-                            <i class="fas fa-users mb-2 d-block fa-2x"></i>
-                            Members
-                        </a>
+                    <h3>Dashboard</h3>
+                    <p>View library metrics and analytics</p>
+                    <a href="{{ url_for('dashboard.index') }}" class="btn btn-primary">Access</a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card">
+                    <div class="admin-icon">
+                        <i class="fas fa-users"></i>
                     </div>
-                    <div class="col-md-3">
-                        <a href="{{ url_for('circulation.issued_books') }}" class="btn btn-outline-info btn-lg d-block mb-3">
-                            <i class="fas fa-exchange-alt mb-2 d-block fa-2x"></i>
-                            Circulation
-                        </a>
+                    <h3>Members</h3>
+                    <p>Manage member accounts and permissions</p>
+                    <a href="{{ url_for('members.list') }}" class="btn btn-primary">Access</a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card">
+                    <div class="admin-icon">
+                        <i class="fas fa-exchange-alt"></i>
                     </div>
-                    <div class="col-md-3">
-                        <a href="{{ url_for('books.add') }}" class="btn btn-outline-warning btn-lg d-block mb-3">
-                            <i class="fas fa-plus-circle mb-2 d-block fa-2x"></i>
-                            Add Books
-                        </a>
+                    <h3>Circulation</h3>
+                    <p>Track book lending and returns</p>
+                    <a href="{{ url_for('circulation.issued_books') }}" class="btn btn-primary">Access</a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-card">
+                    <div class="admin-icon">
+                        <i class="fas fa-plus-circle"></i>
                     </div>
+                    <h3>Add Books</h3>
+                    <p>Add new books to the collection</p>
+                    <a href="{{ url_for('books.add') }}" class="btn btn-primary">Access</a>
                 </div>
             </div>
         </div>
@@ -96,48 +133,60 @@
 </div>
 {% endif %}
 
-<div class="row">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title mb-0">About Our Library</h3>
-            </div>
-            <div class="card-body">
-                <p>Our library management system provides an efficient and user-friendly platform for managing all aspects of a modern library. With features designed for both administrators and regular users, we aim to create a seamless experience for everyone.</p>
-                <p>Administrators can manage books, members, and track circulation, while users can browse the catalog, review books, and get personalized recommendations.</p>
-                <p>Whether you're a book enthusiast or a library administrator, our system has something for you!</p>
+<!-- About section with modern design -->
+<div class="about-section py-5">
+    <div class="container">
+        <div class="row text-center mb-4">
+            <div class="col-md-12">
+                <h2 class="section-title">About Our System</h2>
+                <p class="section-subtitle">Powerful features designed for libraries of all sizes</p>
             </div>
         </div>
-    </div>
-    
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title mb-0">Key Features</h3>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="about-card">
+                    <h3><i class="fas fa-info-circle me-2"></i>Modern Library Management</h3>
+                    <p>Our library management system provides an efficient and user-friendly platform for managing all aspects of a modern library. With features designed for both administrators and regular users, we aim to create a seamless experience for everyone.</p>
+                    <p>Administrators can manage books, members, and track circulation, while users can browse the catalog, review books, and get personalized recommendations.</p>
+                    <p>Whether you're a book enthusiast or a library administrator, our system has something for you!</p>
+                </div>
             </div>
-            <div class="card-body">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex align-items-center">
-                        <i class="fas fa-check-circle text-success me-3"></i>
-                        Book management with detailed information
-                    </li>
-                    <li class="list-group-item d-flex align-items-center">
-                        <i class="fas fa-check-circle text-success me-3"></i>
-                        Member registration and tracking
-                    </li>
-                    <li class="list-group-item d-flex align-items-center">
-                        <i class="fas fa-check-circle text-success me-3"></i>
-                        Book issuance and return handling
-                    </li>
-                    <li class="list-group-item d-flex align-items-center">
-                        <i class="fas fa-check-circle text-success me-3"></i>
-                        Fine calculation for overdue books
-                    </li>
-                    <li class="list-group-item d-flex align-items-center">
-                        <i class="fas fa-check-circle text-success me-3"></i>
-                        Comprehensive analytics and reporting
-                    </li>
-                </ul>
+            
+            <div class="col-md-6">
+                <div class="about-card features-list">
+                    <h3><i class="fas fa-list-check me-2"></i>Key Features</h3>
+                    <ul>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span>Book management with detailed information and cover images</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span>Member registration and comprehensive profile tracking</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span>Advanced book issuance and return handling with QR codes</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span>Automated fine calculation for overdue books</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span>Comprehensive analytics and detailed reporting</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span>Personalized book recommendations based on reading history</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span>Responsive design that works on all devices</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
