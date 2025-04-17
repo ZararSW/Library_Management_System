@@ -9,10 +9,12 @@
 }
 
 body {
-  background-image: url('../wallhaven-96o7jx_1920x1080.png');
+  background-image: url('/wallhaven-96o7jx_1920x1080.png');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
+  min-height: 100vh;
+  position: relative;
   background-color: #1a1e2c;
   font-family: 'Inter', 'Segoe UI', sans-serif;
   line-height: 1.6;
