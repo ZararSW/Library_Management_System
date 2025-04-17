@@ -9,9 +9,10 @@
 }
 
 body {
-  background-color: var(--bs-dark);
+  background: linear-gradient(135deg, #1a1e2c 0%, #2d364c 100%);
   font-family: 'Inter', 'Segoe UI', sans-serif;
   line-height: 1.6;
+  min-height: 100vh;
 }
 
 /* Typography */
