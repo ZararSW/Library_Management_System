@@ -9,7 +9,7 @@
 }
 
 body {
-  background-image: url('/wallhaven-96o7jx_1920x1080.png');
+  background-image: url('../wallhaven-96o7jx_1920x1080.png');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
