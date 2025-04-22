@@ -10,19 +10,27 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth_bp.route('/admin', methods=['GET', 'POST'])
 def admin_login():
-    if current_user.is_authenticated and current_user.is_admin:
-        return redirect(url_for('auth.admin_dashboard'))
+    if current_user.is_authenticated:
+        if current_user.is_admin:
+            return redirect(url_for('auth.admin_dashboard'))
+        else:
+            flash('Access denied. Admin privileges required.', 'danger')
+            return redirect(url_for('index'))
     
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
-        if user and check_password_hash(user.password_hash, form.password.data) and user.is_admin:
-            login_user(user, remember=form.remember_me.data)
-            user.last_login = datetime.utcnow()
-            db.session.commit()
-            return redirect(url_for('auth.admin_dashboard'))
+        if user and check_password_hash(user.password_hash, form.password.data):
+            if user.is_admin:
+                login_user(user, remember=form.remember_me.data)
+                user.last_login = datetime.utcnow()
+                db.session.commit()
+                flash('Welcome to admin dashboard!', 'success')
+                return redirect(url_for('auth.admin_dashboard'))
+            else:
+                flash('Access denied. Admin privileges required.', 'danger')
         else:
-            flash('Invalid admin credentials', 'danger')
+            flash('Invalid username or password', 'danger')
     
     return render_template('auth/admin_login.html', title='Admin Login', form=form)
 
