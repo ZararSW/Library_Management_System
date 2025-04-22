@@ -8,6 +8,32 @@ from datetime import datetime
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
+@auth_bp.route('/admin', methods=['GET', 'POST'])
+def admin_login():
+    if current_user.is_authenticated and current_user.is_admin:
+        return redirect(url_for('auth.admin_dashboard'))
+    
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and check_password_hash(user.password_hash, form.password.data) and user.is_admin:
+            login_user(user, remember=form.remember_me.data)
+            user.last_login = datetime.utcnow()
+            db.session.commit()
+            return redirect(url_for('auth.admin_dashboard'))
+        else:
+            flash('Invalid admin credentials', 'danger')
+    
+    return render_template('auth/admin_login.html', title='Admin Login', form=form)
+
+@auth_bp.route('/admin/dashboard')
+@login_required
+def admin_dashboard():
+    if not current_user.is_admin:
+        abort(403)
+    users = User.query.all()
+    return render_template('auth/admin_dashboard.html', title='Admin Dashboard', users=users)
+
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:

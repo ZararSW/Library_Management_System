@@ -1,0 +1,58 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1>Admin Dashboard</h1>
+            <div class="btn-group mb-3">
+                <a href="{{ url_for('auth.create_admin') }}" class="btn btn-primary">Create Admin</a>
+                <a href="{{ url_for('books.add') }}" class="btn btn-success">Add Book</a>
+                <a href="{{ url_for('members.add') }}" class="btn btn-info">Add Member</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>User Management</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Admin</th>
+                                <th>Last Login</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>{{ user.username }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ 'Yes' if user.is_admin else 'No' }}</td>
+                                <td>{{ user.last_login.strftime('%Y-%m-%d %H:%M:%S') if user.last_login else 'Never' }}</td>
+                                <td>
+                                    <a href="{{ url_for('auth.view_user', user_id=user.id) }}" class="btn btn-sm btn-info">View</a>
+                                    {% if current_user.id != user.id %}
+                                    <form action="{{ url_for('auth.delete_user', user_id=user.id) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
