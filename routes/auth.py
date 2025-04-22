@@ -16,7 +16,7 @@ def admin_login():
         else:
             flash('Access denied. Admin privileges required.', 'danger')
             return redirect(url_for('index'))
-    
+
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -31,7 +31,7 @@ def admin_login():
                 flash('Access denied. Admin privileges required.', 'danger')
         else:
             flash('Invalid username or password', 'danger')
-    
+
     return render_template('auth/admin_login.html', title='Admin Login', form=form)
 
 @auth_bp.route('/admin/dashboard')
@@ -46,7 +46,7 @@ def admin_dashboard():
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    
+
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -54,14 +54,14 @@ def login():
             login_user(user, remember=form.remember_me.data)
             user.last_login = datetime.utcnow()
             db.session.commit()
-            
+
             next_page = request.args.get('next')
             if not next_page or not next_page.startswith('/'):
                 next_page = url_for('index')
             return redirect(next_page)
         else:
             flash('Invalid username or password', 'danger')
-    
+
     return render_template('auth/login.html', title='Login', form=form)
 
 @auth_bp.route('/logout')
@@ -74,7 +74,7 @@ def logout():
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    
+
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(
@@ -88,7 +88,7 @@ def register():
         db.session.commit()
         flash('Account created successfully! You can now login.', 'success')
         return redirect(url_for('auth.login'))
-    
+
     return render_template('auth/register.html', title='Register', form=form)
 
 @auth_bp.route('/profile')
@@ -100,20 +100,20 @@ def profile():
 @login_required
 def edit_profile():
     form = EditProfileForm()
-    
+
     if request.method == 'GET':
         form.username.data = current_user.username
         form.email.data = current_user.email
-    
+
     if form.validate_on_submit():
         if form.current_password.data:
             if check_password_hash(current_user.password_hash, form.current_password.data):
                 current_user.username = form.username.data
                 current_user.email = form.email.data
-                
+
                 if form.new_password.data:
                     current_user.password_hash = generate_password_hash(form.new_password.data)
-                
+
                 db.session.commit()
                 flash('Profile updated successfully!', 'success')
                 return redirect(url_for('auth.profile'))
@@ -125,7 +125,7 @@ def edit_profile():
             db.session.commit()
             flash('Profile updated successfully!', 'success')
             return redirect(url_for('auth.profile'))
-    
+
     return render_template('auth/edit_profile.html', title='Edit Profile', form=form)
 
 @auth_bp.route('/admin/create', methods=['GET', 'POST'])
@@ -133,7 +133,7 @@ def edit_profile():
 def create_admin():
     if not current_user.is_admin:
         abort(403)
-    
+
     form = CreateAdminForm()
     if form.validate_on_submit():
         user = User(
@@ -147,7 +147,7 @@ def create_admin():
         db.session.commit()
         flash('Admin account created successfully!', 'success')
         return redirect(url_for('auth.users'))
-    
+
     return render_template('auth/create_admin.html', title='Create Admin', form=form)
 
 @auth_bp.route('/users')
@@ -155,7 +155,7 @@ def create_admin():
 def users():
     if not current_user.is_admin:
         abort(403)
-    
+
     users = User.query.all()
     return render_template('auth/users.html', title='User Management', users=users)
 
@@ -164,7 +164,7 @@ def users():
 def view_user(user_id):
     if not current_user.is_admin:
         abort(403)
-    
+
     user = User.query.get_or_404(user_id)
     return render_template('auth/view_user.html', title='User Details', user=user)
 
@@ -173,13 +173,27 @@ def view_user(user_id):
 def delete_user(user_id):
     if not current_user.is_admin:
         abort(403)
-    
+
     user = User.query.get_or_404(user_id)
     if user.id == current_user.id:
         flash('You cannot delete your own account', 'danger')
         return redirect(url_for('auth.users'))
-    
+
     db.session.delete(user)
     db.session.commit()
     flash('User deleted successfully!', 'success')
+    return redirect(url_for('auth.users'))
+
+@auth_bp.route('/admin/delete_user/<int:user_id>', methods=['POST'])
+@login_required
+def admin_delete_user(user_id):
+    if not current_user.is_admin:
+        abort(403)
+    user = User.query.get_or_404(user_id)
+    if user.is_admin:
+        flash('Cannot delete admin users', 'danger')
+        return redirect(url_for('auth.users'))
+    db.session.delete(user)
+    db.session.commit()
+    flash('User deleted successfully', 'success')
     return redirect(url_for('auth.users'))
