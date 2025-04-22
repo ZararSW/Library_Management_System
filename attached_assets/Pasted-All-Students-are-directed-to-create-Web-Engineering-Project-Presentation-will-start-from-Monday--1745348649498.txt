@@ -1,0 +1,72 @@
+All Students are directed to create Web Engineering Project. Presentation will start from Monday.
+---
+
+PBL Scenario: Build a Functional Web Application with CRUD Operations
+
+Problem Statement:
+You have been hired by a startup to design and develop a fully functional website tailored to a specific industry or domain of your choice (e.g., E-commerce, Library Management, Event Booking, Inventory System, etc.). Your job is to create a responsive and interactive website that allows users to manage and manipulate data efficiently through a user-friendly interface.
+
+
+---
+
+Your Task:
+
+Design and develop a website that contains at least 3 CRUD (Create, Read, Update, Delete) modules. Each module should represent a distinct entity relevant to your chosen domain.
+
+Examples:
+For an E-commerce website, your CRUD modules could be:
+
+Product – Add new products, view all products, edit product details, delete products.
+
+Customer – Register new customers, view customer list, update customer info, delete customers.
+
+Category – Create categories, list all categories, edit category names, remove categories.
+
+
+
+---
+
+Instructions:
+
+1. You are free to use any tech stack of your choice. (Frontend and Backend can be built using technologies like HTML/CSS/JavaScript, React, Angular, PHP, Java, Python, Node.js, MySQL, MongoDB, Firebase, etc.)
+
+
+2. This is an individual project. Each student must create and submit their own unique project.
+
+
+3. Each of the three modules must implement full CRUD functionality.
+
+
+4. The interface should be user-friendly, intuitive, and mobile-responsive.
+
+
+5. Ensure proper validations, alerts, and confirmations for actions like update or delete.
+
+
+6. Store the data using a backend database or structured file (e.g., JSON) as applicable.
+
+
+7. Backend and frontend should communicate via proper APIs or server-side integration.
+
+
+
+
+---
+
+Deliverables:
+
+A working website hosted locally or on a live platform (e.g., GitHub, , Netlify, Firebase, or localhost).
+
+Complete source code.
+
+A brief report or presentation explaining:
+
+Your chosen domain
+
+Description of each CRUD module
+
+Tech stack used
+
+Challenges faced and how you solved them
+
+Screenshots or r demo walk-through.
